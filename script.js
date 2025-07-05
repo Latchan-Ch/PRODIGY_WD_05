@@ -1,4 +1,4 @@
-const apiKey = "YOUR_API_KEY11160a8e2e3a470fe022084f2bfa1fee"; 
+const apiKey = "11160a8e2e3a470fe022084f2bfa1fee";
 
 async function getWeather() {
   const city = document.getElementById("cityInput").value;
@@ -9,7 +9,10 @@ async function getWeather() {
     return;
   }
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+  // Use CORS proxy to avoid GitHub Pages restrictions
+  const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(
+    `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+  )}`;
 
   try {
     const response = await fetch(url);
@@ -17,6 +20,8 @@ async function getWeather() {
 
     if (data.cod === "404") {
       weatherDiv.innerHTML = `<p>City not found.</p>`;
+    } else if (data.cod && data.cod !== 200) {
+      weatherDiv.innerHTML = `<p>Error: ${data.message}</p>`;
     } else {
       const temp = data.main.temp;
       const desc = data.weather[0].description;
@@ -31,5 +36,6 @@ async function getWeather() {
     }
   } catch (error) {
     weatherDiv.innerHTML = `<p>Error fetching weather data.</p>`;
+    console.error("Fetch error:", error);
   }
 }
